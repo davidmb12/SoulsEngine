@@ -24,7 +24,7 @@ public partial class @PlayerIA: IInputActionCollection2, IDisposable
     ""name"": ""PlayerIA"",
     ""maps"": [
         {
-            ""name"": ""Locomotion"",
+            ""name"": ""PlayerMovement"",
             ""id"": ""ac821ef1-a8db-4c05-bd49-9cfb4665d21f"",
             ""actions"": [
                 {
@@ -38,12 +38,21 @@ public partial class @PlayerIA: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Camera"",
-                    ""type"": ""Value"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""4c5c89de-913c-43c8-a757-7d1ad0cd5604"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ToggleWalk"",
+                    ""type"": ""Button"",
+                    ""id"": ""8d195a03-9589-44a4-bef4-c6e46bbbe8ee"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -112,16 +121,70 @@ public partial class @PlayerIA: IInputActionCollection2, IDisposable
                     ""action"": ""Camera"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fa55eac5-2e39-4d18-a04c-3340000d7deb"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleWalk"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""PlayerActions"",
+            ""id"": ""989f04f1-8a66-429a-a4d9-504f50302f22"",
+            ""actions"": [
+                {
+                    ""name"": ""Roll"",
+                    ""type"": ""Value"",
+                    ""id"": ""80ba20cb-b6a2-4499-b95d-20fc90ed20f3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""210ba5b7-13a9-4ebe-8f63-af3ca31ce545"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Roll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""22949761-5872-4ddd-8c01-e83c0c99b763"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Roll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
     ],
     ""controlSchemes"": []
 }");
-        // Locomotion
-        m_Locomotion = asset.FindActionMap("Locomotion", throwIfNotFound: true);
-        m_Locomotion_Movement = m_Locomotion.FindAction("Movement", throwIfNotFound: true);
-        m_Locomotion_Camera = m_Locomotion.FindAction("Camera", throwIfNotFound: true);
+        // PlayerMovement
+        m_PlayerMovement = asset.FindActionMap("PlayerMovement", throwIfNotFound: true);
+        m_PlayerMovement_Movement = m_PlayerMovement.FindAction("Movement", throwIfNotFound: true);
+        m_PlayerMovement_Camera = m_PlayerMovement.FindAction("Camera", throwIfNotFound: true);
+        m_PlayerMovement_ToggleWalk = m_PlayerMovement.FindAction("ToggleWalk", throwIfNotFound: true);
+        // PlayerActions
+        m_PlayerActions = asset.FindActionMap("PlayerActions", throwIfNotFound: true);
+        m_PlayerActions_Roll = m_PlayerActions.FindAction("Roll", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -180,35 +243,40 @@ public partial class @PlayerIA: IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // Locomotion
-    private readonly InputActionMap m_Locomotion;
-    private List<ILocomotionActions> m_LocomotionActionsCallbackInterfaces = new List<ILocomotionActions>();
-    private readonly InputAction m_Locomotion_Movement;
-    private readonly InputAction m_Locomotion_Camera;
-    public struct LocomotionActions
+    // PlayerMovement
+    private readonly InputActionMap m_PlayerMovement;
+    private List<IPlayerMovementActions> m_PlayerMovementActionsCallbackInterfaces = new List<IPlayerMovementActions>();
+    private readonly InputAction m_PlayerMovement_Movement;
+    private readonly InputAction m_PlayerMovement_Camera;
+    private readonly InputAction m_PlayerMovement_ToggleWalk;
+    public struct PlayerMovementActions
     {
         private @PlayerIA m_Wrapper;
-        public LocomotionActions(@PlayerIA wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Movement => m_Wrapper.m_Locomotion_Movement;
-        public InputAction @Camera => m_Wrapper.m_Locomotion_Camera;
-        public InputActionMap Get() { return m_Wrapper.m_Locomotion; }
+        public PlayerMovementActions(@PlayerIA wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Movement => m_Wrapper.m_PlayerMovement_Movement;
+        public InputAction @Camera => m_Wrapper.m_PlayerMovement_Camera;
+        public InputAction @ToggleWalk => m_Wrapper.m_PlayerMovement_ToggleWalk;
+        public InputActionMap Get() { return m_Wrapper.m_PlayerMovement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(LocomotionActions set) { return set.Get(); }
-        public void AddCallbacks(ILocomotionActions instance)
+        public static implicit operator InputActionMap(PlayerMovementActions set) { return set.Get(); }
+        public void AddCallbacks(IPlayerMovementActions instance)
         {
-            if (instance == null || m_Wrapper.m_LocomotionActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_LocomotionActionsCallbackInterfaces.Add(instance);
+            if (instance == null || m_Wrapper.m_PlayerMovementActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PlayerMovementActionsCallbackInterfaces.Add(instance);
             @Movement.started += instance.OnMovement;
             @Movement.performed += instance.OnMovement;
             @Movement.canceled += instance.OnMovement;
             @Camera.started += instance.OnCamera;
             @Camera.performed += instance.OnCamera;
             @Camera.canceled += instance.OnCamera;
+            @ToggleWalk.started += instance.OnToggleWalk;
+            @ToggleWalk.performed += instance.OnToggleWalk;
+            @ToggleWalk.canceled += instance.OnToggleWalk;
         }
 
-        private void UnregisterCallbacks(ILocomotionActions instance)
+        private void UnregisterCallbacks(IPlayerMovementActions instance)
         {
             @Movement.started -= instance.OnMovement;
             @Movement.performed -= instance.OnMovement;
@@ -216,26 +284,80 @@ public partial class @PlayerIA: IInputActionCollection2, IDisposable
             @Camera.started -= instance.OnCamera;
             @Camera.performed -= instance.OnCamera;
             @Camera.canceled -= instance.OnCamera;
+            @ToggleWalk.started -= instance.OnToggleWalk;
+            @ToggleWalk.performed -= instance.OnToggleWalk;
+            @ToggleWalk.canceled -= instance.OnToggleWalk;
         }
 
-        public void RemoveCallbacks(ILocomotionActions instance)
+        public void RemoveCallbacks(IPlayerMovementActions instance)
         {
-            if (m_Wrapper.m_LocomotionActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_PlayerMovementActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
-        public void SetCallbacks(ILocomotionActions instance)
+        public void SetCallbacks(IPlayerMovementActions instance)
         {
-            foreach (var item in m_Wrapper.m_LocomotionActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_PlayerMovementActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_LocomotionActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_PlayerMovementActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
-    public LocomotionActions @Locomotion => new LocomotionActions(this);
-    public interface ILocomotionActions
+    public PlayerMovementActions @PlayerMovement => new PlayerMovementActions(this);
+
+    // PlayerActions
+    private readonly InputActionMap m_PlayerActions;
+    private List<IPlayerActionsActions> m_PlayerActionsActionsCallbackInterfaces = new List<IPlayerActionsActions>();
+    private readonly InputAction m_PlayerActions_Roll;
+    public struct PlayerActionsActions
+    {
+        private @PlayerIA m_Wrapper;
+        public PlayerActionsActions(@PlayerIA wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Roll => m_Wrapper.m_PlayerActions_Roll;
+        public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PlayerActionsActions set) { return set.Get(); }
+        public void AddCallbacks(IPlayerActionsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PlayerActionsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PlayerActionsActionsCallbackInterfaces.Add(instance);
+            @Roll.started += instance.OnRoll;
+            @Roll.performed += instance.OnRoll;
+            @Roll.canceled += instance.OnRoll;
+        }
+
+        private void UnregisterCallbacks(IPlayerActionsActions instance)
+        {
+            @Roll.started -= instance.OnRoll;
+            @Roll.performed -= instance.OnRoll;
+            @Roll.canceled -= instance.OnRoll;
+        }
+
+        public void RemoveCallbacks(IPlayerActionsActions instance)
+        {
+            if (m_Wrapper.m_PlayerActionsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IPlayerActionsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PlayerActionsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PlayerActionsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public PlayerActionsActions @PlayerActions => new PlayerActionsActions(this);
+    public interface IPlayerMovementActions
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnCamera(InputAction.CallbackContext context);
+        void OnToggleWalk(InputAction.CallbackContext context);
+    }
+    public interface IPlayerActionsActions
+    {
+        void OnRoll(InputAction.CallbackContext context);
     }
 }

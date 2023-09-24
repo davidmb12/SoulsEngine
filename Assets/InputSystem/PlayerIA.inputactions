@@ -2,7 +2,7 @@
     "name": "PlayerIA",
     "maps": [
         {
-            "name": "Locomotion",
+            "name": "PlayerMovement",
             "id": "ac821ef1-a8db-4c05-bd49-9cfb4665d21f",
             "actions": [
                 {
@@ -16,12 +16,21 @@
                 },
                 {
                     "name": "Camera",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "4c5c89de-913c-43c8-a757-7d1ad0cd5604",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "ToggleWalk",
+                    "type": "Button",
+                    "id": "8d195a03-9589-44a4-bef4-c6e46bbbe8ee",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -88,6 +97,56 @@
                     "processors": "",
                     "groups": "",
                     "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fa55eac5-2e39-4d18-a04c-3340000d7deb",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleWalk",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "PlayerActions",
+            "id": "989f04f1-8a66-429a-a4d9-504f50302f22",
+            "actions": [
+                {
+                    "name": "Roll",
+                    "type": "Value",
+                    "id": "80ba20cb-b6a2-4499-b95d-20fc90ed20f3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "210ba5b7-13a9-4ebe-8f63-af3ca31ce545",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Roll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "22949761-5872-4ddd-8c01-e83c0c99b763",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Roll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

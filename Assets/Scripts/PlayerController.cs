@@ -18,9 +18,7 @@ public class PlayerController : MonoBehaviour
     [Header("INPUTS")]
     [SerializeField] public float verticalMovement;
     [SerializeField] public float horizontalMovement;
-    [SerializeField] float mouseX;
-    [SerializeField] float mouseY; 
-
+    
     //PLAYER VARIABLES
     [Header("Player")]
     [SerializeField] bool isDualWielding;
@@ -30,6 +28,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] bool isGrounded;
     [SerializeField] bool isWalking;
     [SerializeField] bool isJumping;
+    [SerializeField] bool isRunning;
     [SerializeField] float rotationSpeed;
     [SerializeField] float sprintSpeed;
     [SerializeField] float runningSpeed;
@@ -52,22 +51,10 @@ public class PlayerController : MonoBehaviour
     private Vector3 moveDirection;
     private Vector3 jumpDirection;
 
-    //CAMERA VARIABLES
-    [Header("Camera")]
-    [SerializeField] float leftAndRightLookSpeed;
-    [SerializeField] float upAndDownLookSpeed;
-    [SerializeField] float minimumPivot;
-    [SerializeField] float maximumPivot;
-    [SerializeField] GameObject playerCamera;
-    [SerializeField] GameObject playerCameraPivot;
-    [SerializeField] Camera cameraObject;
+    CameraHandler camHandler;
 
 
-    [Header("Camera Debug")]
-    [SerializeField] float leftAndRightLookAngle;
-    [SerializeField] float UpAndDownLookAngle;
-    private Vector3 cameraFollowVelocity = Vector3.zero;
-
+    
     //ATTACK VARIABLES
     [SerializeField] bool isLockedOn;
 
@@ -77,21 +64,18 @@ public class PlayerController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
-        cameraObject = Camera.main;
+        camHandler = GetComponent<CameraHandler>();
     }
 
-    #region
+    #region UPDATE
     private void Update()
     {
         HandleInputs();
         UpdateAnimationParameters();
-        HandleAllPlayerLocomotion();
+        //HandleAllPlayerLocomotion();
 
     }
-    private void LateUpdate()
-    {
-        HandleCameraActions();
-    }
+    
     #endregion
     public void OnMove(InputAction.CallbackContext ctx)
     {
@@ -100,26 +84,36 @@ public class PlayerController : MonoBehaviour
         horizontalMovement = moveVector.x;
     }
 
-    public void OnMouseMove(InputAction.CallbackContext ctx)
+    
+    public void OnToggleWalk(InputAction.CallbackContext ctx)
     {
-        Vector2 mouseVector = ctx.ReadValue<Vector2>();
-        mouseX = mouseVector.x;
-        mouseY = mouseVector.y;
-
+        if (ctx.performed)
+        {
+            if (isWalking || !isRunning)
+            {
+                isWalking = false;
+                isRunning = true;
+            }
+            else if (!isWalking || isRunning)
+            {
+                isWalking = true;
+                isRunning = false;
+            }  
+        }
     }
-
     public void OnLightAttack(InputAction.CallbackContext ctx)
     {
 
     }
 
 
-    private void HandleAllPlayerLocomotion()
+    /*private void HandleAllPlayerLocomotion()
     {
         HandleGroundCheck();
         HandlePlayerMovement();
         HandlePlayerRotation();
-    }
+        
+    }*/
 
 
     private void HandleWalkOrRun()
@@ -132,15 +126,16 @@ public class PlayerController : MonoBehaviour
     private void HandleInputs()
     {
         moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalMovement) + Mathf.Abs(verticalMovement));
+        HandleWalkOrRun();
     }
-    private void HandlePlayerRotation()
+    /*private void HandlePlayerRotation()
     {
         if (!allowRotation)
             return;
 
         Vector3 targetDirection = Vector3.zero;
-        targetDirection = cameraObject.transform.forward * verticalMovement;
-        targetDirection = targetDirection + cameraObject.transform.right * horizontalMovement;
+        targetDirection = camHandler.cameraObject.transform.forward * verticalMovement;
+        targetDirection = targetDirection + camHandler.cameraObject.transform.right * horizontalMovement;
         targetDirection.Normalize();
         targetDirection.y = 0;
 
@@ -152,16 +147,16 @@ public class PlayerController : MonoBehaviour
         Quaternion turnRotation = Quaternion.LookRotation(targetDirection);
         Quaternion targetRotation = Quaternion.Slerp(transform.rotation, turnRotation, rotationSpeed * Time.deltaTime);
         transform.rotation = targetRotation;
-    }
-    private void HandlePlayerMovement()
+    }*/
+    /*private void HandlePlayerMovement()
     {
         if (!allowMovement)
             return;
-        /*if (!isGrounded)
+        *//*if (!isGrounded)
             return;
-*/
-        moveDirection = cameraObject.transform.forward * verticalMovement;
-        moveDirection = moveDirection + cameraObject.transform.right * horizontalMovement;
+*//*
+        moveDirection = camHandler.cameraObject.transform.forward * verticalMovement;
+        moveDirection = moveDirection + camHandler.cameraObject .transform.right * horizontalMovement;
         moveDirection.Normalize();
         moveDirection.y = 0;
 
@@ -172,21 +167,17 @@ public class PlayerController : MonoBehaviour
 
         moveDirection = moveDirection * walkingSpeed * Time.deltaTime;
         characterController.Move(moveDirection);
-    }
+    }*/
     #region CAMERA
     private void HandleCameraActions()
     {
-        HandleCameraFollowPlayer();
-        HandleCameraRotate();
+        //HandleCameraFollowPlayer();
+        //HandleCameraRotate();
     }
 
-    private void HandleCameraFollowPlayer()
-    {
-        Vector3 targetPosition = Vector3.SmoothDamp(playerCamera.transform.position, transform.position, ref cameraFollowVelocity, 0.1f);
-        playerCamera.transform.position = targetPosition;
-    }
+    
 
-    private void HandleCameraRotate()
+    /*private void HandleCameraRotate()
     {
         Vector3 cameraRotation;
         Quaternion targetCameraRotation;
@@ -206,7 +197,7 @@ public class PlayerController : MonoBehaviour
         targetCameraRotation = Quaternion.Euler(cameraRotation);
         playerCameraPivot.transform.localRotation = targetCameraRotation;
 
-    }
+    }*/
 
     private void HandleGroundCheck()
     {
