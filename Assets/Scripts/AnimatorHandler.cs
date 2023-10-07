@@ -71,6 +71,7 @@ public class AnimatorHandler : MonoBehaviour
             v = 2;
             h = horizontalMovement;
         }
+
         anim.SetFloat(vertical, v, 0.1f, Time.deltaTime);
         anim.SetFloat(horizontal, h, 0.1f, Time.deltaTime);
     }
@@ -92,6 +93,15 @@ public class AnimatorHandler : MonoBehaviour
         canRotate = false;
     }
 
+    public void EnableCombo()
+    {
+        anim.SetBool("canDoCombo", true);
+    }
+
+    public void DisableCombo()
+    {
+        anim.SetBool("canDoCombo", false);
+    }
     private void OnAnimatorMove()
     {
         if (playerManager.isInteracting == false)

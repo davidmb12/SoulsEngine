@@ -33,7 +33,7 @@ public class PlayerLocomotion : MonoBehaviour
 
     [Header("Movement Stats")]
     [SerializeField]
-    float movementSpeed = 5;
+    float walkingSpeed = 5;
     [SerializeField]
     float sprintSpeed= 7;
     [SerializeField]
@@ -85,15 +85,19 @@ public class PlayerLocomotion : MonoBehaviour
 
     public void HandleMovement(float delta)
     {
+
         if (inputHandler.rollFlag)
+            return;
+
+        if (playerManager.isInteracting)
             return;
         moveDirection = cameraObject.forward * inputHandler.vertical;
         moveDirection += cameraObject.right * inputHandler.horizontal;
         moveDirection.Normalize();
         moveDirection.y = 0;
-        float speed = movementSpeed;
+        float speed = walkingSpeed;
 
-        if (inputHandler.sprintFlag)
+        if (inputHandler.sprintFlag && inputHandler.moveAmount>0.5)
         {
             speed = sprintSpeed;
             playerManager.isSprinting = true;
@@ -102,15 +106,24 @@ public class PlayerLocomotion : MonoBehaviour
         }
         else
         {
-            moveDirection *= speed;
+            if (inputHandler.moveAmount < 0.5)
+            {
+                moveDirection *= walkingSpeed;
+                playerManager.isSprinting = false;
+            }
+            else
+            {
+                moveDirection *= speed;
+                playerManager.isSprinting = false;
+            }
 
         }
 
 
         Vector3 projectedVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
         rigidbody.velocity = projectedVelocity;
+        animatorHandler.UpdateAnimatorValue(inputHandler.moveAmount, 0, playerManager.isSprinting);
 
-        animatorHandler.UpdateAnimatorValue(inputHandler.moveAmount, 0,playerManager.isSprinting);
         if (animatorHandler.canRotate)
         {
             HandleRotation(delta);
@@ -123,6 +136,10 @@ public class PlayerLocomotion : MonoBehaviour
             return;
         if (inputHandler.rollFlag)
         {
+            //Maybe remove this
+            playerManager.isSprinting = false;
+            moveDirection = Vector3.zero;
+
             moveDirection = cameraObject.forward * inputHandler.vertical;
             moveDirection += cameraObject.right * inputHandler.horizontal;
             if(inputHandler.moveAmount > 0)
@@ -131,10 +148,12 @@ public class PlayerLocomotion : MonoBehaviour
                 moveDirection.y = 0;
                 Quaternion rollRotation = Quaternion.LookRotation(moveDirection);
                 mTransform.rotation = rollRotation;
+
             }
             else
             {
                 animatorHandler.PlayTargetAnimation("Main_Backstep_01", true);
+
             }
         }
     }
@@ -143,19 +162,23 @@ public class PlayerLocomotion : MonoBehaviour
     {
         playerManager.isGrounded = false;
         RaycastHit hit;
+        //Set check falling ray origin point with declared offset
         Vector3 origin = mTransform.position;
         origin.y += groundDetectionRayStartPoint;
 
+        //
         if(Physics.Raycast(origin,mTransform.forward,out hit, 0.4f))
         {
             moveDirection = Vector3.zero;
         }
 
+        //Add gravity and forward force
         if (playerManager.isInAir)
         {
             rigidbody.AddForce(-Vector3.up * fallingSpeed);
             rigidbody.AddForce(moveDirection * fallingSpeed / 5);
         }
+
         Vector3 dir = moveDirection;
         dir.Normalize();
         origin = origin + dir * groundDirectionRayDistance;
@@ -173,13 +196,15 @@ public class PlayerLocomotion : MonoBehaviour
             {
                 if (inAirTimer > 0.5f)
                 {
-                    animatorHandler.PlayTargetAnimation("Land", true);
+                    animatorHandler.PlayTargetAnimation("Landing", true);
+
                 }
                 else
                 {
                     animatorHandler.PlayTargetAnimation("Empty", false);
-                    inAirTimer = 0;
                 }
+                inAirTimer = 0;
+
                 playerManager.isInAir = false;
             }
         }
@@ -197,21 +222,19 @@ public class PlayerLocomotion : MonoBehaviour
                 }
                 Vector3 vel = rigidbody.velocity;
                 vel.Normalize();
-                rigidbody.velocity = vel * (movementSpeed / 2);
+                rigidbody.velocity = vel * (walkingSpeed / 2);
                 playerManager.isInAir = true;
             }
         }
-        if (playerManager.isGrounded)
+        if(playerManager.isInteracting || inputHandler.moveAmount > 0)
         {
-            if(playerManager.isInteracting || inputHandler.moveAmount > 0)
-            {
-                mTransform.position = Vector3.Lerp(mTransform.position, targetPosition, Time.deltaTime);
-            }
-            else
-            {
-                mTransform.position = targetPosition;
-            }
+            mTransform.position = Vector3.Lerp(mTransform.position, targetPosition, Time.deltaTime / 0.1f);
         }
+        else
+        {
+            mTransform.position = targetPosition;
+        }
+        
     }
     #endregion
 

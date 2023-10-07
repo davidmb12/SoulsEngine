@@ -6,6 +6,7 @@ public class PlayerManager : MonoBehaviour
 {
     InputHandler inputHandler;
     Animator anim;
+    AnimatorHandler animHandler;
     CameraHandler cameraHandler;
     PlayerLocomotion playerLocomotion;
 
@@ -14,18 +15,18 @@ public class PlayerManager : MonoBehaviour
     public bool isSprinting;
     public bool isInAir;
     public bool isGrounded;
-
+    public bool canDoCombo;
 
 
     private void Awake()
     {
+        cameraHandler = FindObjectOfType<CameraHandler>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        cameraHandler = CameraHandler.singleton;
-
+        animHandler = GetComponentInChildren<AnimatorHandler>();
         inputHandler = GetComponent<InputHandler>();
         anim = GetComponentInChildren<Animator>();
         playerLocomotion = GetComponent<PlayerLocomotion>();
@@ -37,8 +38,9 @@ public class PlayerManager : MonoBehaviour
         float delta = Time.deltaTime;
 
         isInteracting = anim.GetBool("isPerformingAction");
-        
+        canDoCombo = anim.GetBool("canDoCombo");
         inputHandler.TickInput(delta);
+        animHandler.UpdateAnimatorValue(inputHandler.moveAmount, 0, isSprinting);
 
         playerLocomotion.HandleMovement(delta);
         playerLocomotion.HandleRollingAndSprinting(delta);
@@ -60,7 +62,8 @@ public class PlayerManager : MonoBehaviour
     {
         inputHandler.rollFlag = false;
         inputHandler.sprintFlag = false;
-        isSprinting = inputHandler.b_Input;
+        inputHandler.rb_Input = false;
+        inputHandler.rt_Input = false;
 
         if (isInAir)
         {

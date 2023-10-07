@@ -33,10 +33,11 @@ public class CameraHandler : MonoBehaviour
 
     private void Awake()
     {
-        mTransform = transform;
         singleton = this;
+        mTransform = transform;
         defaultPosition = cameraTransform.localPosition.z;
         ignoreLayers = ~(1 << 8 | 1 << 9 | 1 << 10);
+        targetTransform = FindObjectOfType<PlayerManager>().transform;
     }
     private void Start()
     {
