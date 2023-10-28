@@ -6,7 +6,6 @@ public class EnemyLocomotionManager : MonoBehaviour
 {
     EnemyManager enemyManager;
     EnemyAnimatorManager enemyAnimatorManager;
-    public Rigidbody enemyRigidBody;
     [SerializeField]
     LayerMask detectionLayer;
 
@@ -15,24 +14,9 @@ public class EnemyLocomotionManager : MonoBehaviour
     {
         enemyManager = GetComponent<EnemyManager>();
         enemyAnimatorManager = GetComponentInChildren<EnemyAnimatorManager>();
-        enemyRigidBody = GetComponent<Rigidbody>();
-    }
-
-    private void Start()
-    {
-        enemyRigidBody.isKinematic = false;
     }
 
 
-    public void HandleMoveToTarget()
-    {
 
 
-
-    }
-
-    private void HandleRotateTowardsTarget()
-    {
-
-    }
 }

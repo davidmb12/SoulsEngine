@@ -8,15 +8,16 @@ public class EnemyManager : CharacterManager
     EnemyLocomotionManager enemyLocomotionManager;
     EnemyAnimatorManager enemyAnimatorManager;
     EnemyStats enemyStats;
-
-    public NavMeshAgent navmeshAgent;
     public State currentState;
     public CharacterStats currentTarget;
+    public NavMeshAgent navmeshAgent;
+    public Rigidbody enemyRigidBody;
+
+
     public bool isPerformingAction;
     public float distanceFromTarget;
-    public float stoppingDistance = 1;
     public float rotationSpeed = 15;
-
+    public float maximumAttackRange = 1.5f;
     public float detectionRadius = 20;
     //The higher, and lower, respectively these angles are, the greater detection field of view (basically like eye sight)
     public float minimumDetectionAngle = -50;
@@ -28,9 +29,15 @@ public class EnemyManager : CharacterManager
         enemyLocomotionManager = GetComponent<EnemyLocomotionManager>();
         enemyAnimatorManager = GetComponentInChildren<EnemyAnimatorManager>();
         enemyStats = GetComponent<EnemyStats>();
+        enemyRigidBody = GetComponent<Rigidbody>();
         navmeshAgent = GetComponentInChildren<NavMeshAgent>();
 
     }
+    private void Start()
+    {
+        enemyRigidBody.isKinematic = false;
+    }
+
     private void Update()
     {
         HandleRecoveryTimer();
