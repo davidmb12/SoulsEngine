@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b24e597f74b7dd149a2d9d8b1ca8e888, type: 3}
+  m_Name: Macuahuitl
+  m_EditorClassIdentifier: 
+  itemIcon: {fileID: 21300000, guid: 0783909f812532244ab32f92f631d9f8, type: 3}
+  itemName: Macuahuitl
+  modelPrefab: {fileID: 8888715566867518499, guid: 53d7ce9f03c9bcc438f82d874c077bb7,
+    type: 3}
+  isUnarmed: 0
+  Right_Hand_Idle: 
+  Left_Hand_Idle: 
+  Th_Idle: TH_Idle_01
+  OH_Light_Attack_01: Main_Light_Attack_01
+  OH_Light_Attack_02: Main_Light_Attack_02
+  OH_Heavy_Attack_01: Main_Light_Attack_02
+  OH_Heavy_Attack_02: 
+  TH_Light_Attack_01: TH_Light_Attack_01
+  TH_Light_Attack_02: TH_Light_Attack_02
+  baseStamina: 30
+  lightAttackMultiplier: 1
+  heavyAttackMultiplier: 2
