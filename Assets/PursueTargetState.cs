@@ -8,12 +8,14 @@ public class PursueTargetState : State
     public CombatStanceState combatStanceState;
     public override State Tick(EnemyManager enemyManager, EnemyStats enemyStats, EnemyAnimatorManager enemyAnimatorManager)
     {
+        //if (enemyManager.isPerformingAction)
+        //  return this;
         Vector3 targetDirection = enemyManager.currentTarget.transform.position - transform.position;
-        float distanceFromTarget = Vector3.Distance(enemyManager.currentTarget.transform.position, transform.position);
+        enemyManager.distanceFromTarget = Vector3.Distance(enemyManager.currentTarget.transform.position, transform.position);
         float viewableAngle = Vector3.Angle(targetDirection, transform.forward);
 
         //If we are performing an action, stop our movement
-        if (distanceFromTarget > enemyManager.maximumAttackRange)
+        if (enemyManager.distanceFromTarget > enemyManager.maximumAttackRange)
         {
             enemyAnimatorManager.anim.SetFloat("Vertical", 1, 0.1f, Time.deltaTime);
         }

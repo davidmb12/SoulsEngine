@@ -22,6 +22,7 @@ public class EnemyManager : CharacterManager
     //The higher, and lower, respectively these angles are, the greater detection field of view (basically like eye sight)
     public float minimumDetectionAngle = -50;
     public float maximumDetectionAngle = 50;
+    public float viewableAngle;
 
     public float currentRecoveryTime = 0;
     private void Awake()
@@ -79,70 +80,6 @@ public class EnemyManager : CharacterManager
     }
 
     #region Attacks
-    private void GetNewAttack()
-    {
-        /*Vector3 targetsDirection = enemyLocomotionManager.currentTarget.transform.position - transform.position;
-        float viewableAngle = Vector3.Angle(targetsDirection, transform.forward);
-
-        enemyLocomotionManager.distanceFromTarget = Vector3.Distance(enemyLocomotionManager.currentTarget.transform.position, transform.position);
-
-        int maxScore = 0;
-        for (int i = 0; i < enemyAttacks.Length; i++)
-        {
-            EnemyAttackAction enemyAttackAction = enemyAttacks[i];
-
-            if (enemyLocomotionManager.distanceFromTarget <= enemyAttackAction.maximumDistanceNeededToAttack && enemyLocomotionManager.distanceFromTarget >= enemyAttackAction.minimumDistanceNeededToAttack)
-            {
-                if (viewableAngle <= enemyAttackAction.maximumAttackAngle && viewableAngle >= enemyAttackAction.minimumAttackAngle)
-                {
-                    maxScore += enemyAttackAction.attackScore;
-                }
-            }
-        }
-
-        int randomValue = Random.Range(0, maxScore);
-        int temporaryScore = 0;
-
-        for (int i = 0; i < enemyAttacks.Length; i++)
-        {
-            EnemyAttackAction enemyAttackAction = enemyAttacks[i];
-
-            if (enemyLocomotionManager.distanceFromTarget <= enemyAttackAction.maximumDistanceNeededToAttack && enemyLocomotionManager.distanceFromTarget >= enemyAttackAction.minimumDistanceNeededToAttack)
-            {
-                if (viewableAngle <= enemyAttackAction.maximumAttackAngle && viewableAngle >= enemyAttackAction.minimumAttackAngle)
-                {
-                    if (currentAttack != null)
-                    {
-                        return;
-                    }
-
-                    temporaryScore += enemyAttackAction.attackScore;
-                    if (temporaryScore > randomValue)
-                    {
-                        currentAttack = enemyAttackAction;
-                    }
-                }
-            }
-        }*/
-    }
-
-    private void AttackTarget()
-    {
-        /*if (isPerformingAction)
-            return;
-
-
-        if (currentAttack == null)
-        {
-            GetNewAttack();
-        }
-        else
-        {
-            isPerformingAction = true;
-            currentRecoveryTime = currentAttack.recoveryTime;
-            enemyAnimatorManager.PlayTargetAnimation(currentAttack.actionAnimation, true);
-            currentAttack = null;
-        }*/
-    }
+    
     #endregion 
 }
